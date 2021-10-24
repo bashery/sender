@@ -1,1 +1,2 @@
-# chater
+# sender
+chat server
