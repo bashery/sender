@@ -1,44 +1,40 @@
+// Copyright 2013 The Gorilla WebSocket Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package main
 
 import (
-	"fmt"
+	"flag"
+	"log"
 	"net/http"
-
-	"github.com/gorilla/websocket"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
+var addr = flag.String("addr", "localhost:8080", "http service address")
 
-func connections(w http.ResponseWriter, r *http.Request) {
-	conn, _ := upgrader.Upgrade(w, r, nil) // error ignored for sake of simplicity
-
-	for {
-		// Read message from browser
-		msgType, msg, err := conn.ReadMessage()
-		if err != nil {
-			return
-		}
-
-		// Print the message to the console
-		fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
-
-		// Write message back to browser
-		if err = conn.WriteMessage(msgType, msg); err != nil {
-			return
-		}
+func serveHome(w http.ResponseWriter, r *http.Request) {
+	log.Println(r.URL)
+	if r.URL.Path != "/" {
+		http.Error(w, "Not found", http.StatusNotFound)
+		return
 	}
+	if r.Method != "GET" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	http.ServeFile(w, r, "websocket.html")
 }
 
 func main() {
-	fmt.Println("start sender server chat app\n")
-	http.HandleFunc("/echo", connections)
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "websocket.html")
+	flag.Parse()
+	hub := newHub()
+	go hub.run()
+	http.HandleFunc("/", serveHome)
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		serveWs(hub, w, r)
 	})
-
-	http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(*addr, nil)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }
