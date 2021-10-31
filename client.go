@@ -6,6 +6,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -70,6 +71,7 @@ func (c *Client) readPump() {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
+		fmt.Println(c.conn.RemoteAddr(), "send:", string(message), "sub:", c.conn.Subprotocol()+",")
 		c.hub.broadcast <- message
 	}
 }
