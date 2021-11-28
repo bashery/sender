@@ -23,7 +23,8 @@ window.onload = function () {
         if (!msg.value) {
             return false;
         }
-        conn.send(msg.value);
+
+        conn.send(msg.value.substring(0, 400));
         msg.value = "";
         return false;
     };
