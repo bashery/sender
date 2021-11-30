@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	log.Println("sender server starts")
+	log.Println("start chat server...")
 
 	hub := newHub()
 	go hub.run()
