@@ -60,9 +60,7 @@ func (c *Client) readPump() {
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
-		_, message, err := c.conn.ReadMessage()
-		/* mor than max buffer size close connextion! */
-		fmt.Println("len message is : ", len(message))
+		_, message, err := c.conn.ReadMessage() // mor than maxBufferSize coase cause closuers connextion!
 
 		if err != nil {
 
@@ -123,6 +121,7 @@ func (c *Client) writePump() {
 	}
 }
 
+// hhhhhhhhhhhhhhhhhs;lkjs;dklfja;sldkjf;s
 // serveWs handles websocket requests from the peer.
 func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)

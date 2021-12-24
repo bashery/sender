@@ -1,11 +1,15 @@
 // Use of this source code is governed by a BSD-style
 package main
 
+type Rooms map[string]Client
+
 // Hub maintains the set of active clients and broadcasts messages to the
 // clients.
 type Hub struct {
 	// Registered clients.
 	clients map[*Client]bool
+
+	rooms Rooms
 
 	// Inbound messages from the clients.
 	broadcast chan []byte
