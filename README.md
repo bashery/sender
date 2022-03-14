@@ -1,2 +1,2 @@
- # im
-instent messager lib/server
+ # mersal-web 
+semple instant messaging application for web.
